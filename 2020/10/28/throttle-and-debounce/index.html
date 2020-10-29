@@ -22,17 +22,19 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
   </script>
 
-  <meta name="description" content="防抖和节流是两个相似的技术去控制很多次我们允许一个函数去执行在一定时间内 有防抖和节流的函数是特别有用的，当我们把这个函数绑到DOM事件时。为什么？因为我们有了一个控制层在事件和执行函数之间。记住，如果我们不去控制DOM事件的冒泡，它的数量可以非常巨大。">
+  <meta name="description" content="这是一篇译文，是一篇我感觉对防抖和节流解释比较好懂的博客。原文在这里  防抖和节流是两个相似的技术去控制很多次我们允许一个函数去执行在一定时间内 有防抖和节流的函数是特别有用的，当我们把这个函数绑到DOM事件时。为什么？因为我们有了一个控制层在事件和执行函数之间。记住，如果我们不去控制DOM事件的冒泡，它的数量可以非常巨大。 例如，让我们看看滚动事件，看下面的例子：   当我们使用触摸板，滚轮或">
 <meta property="og:type" content="article">
 <meta property="og:title" content="通过例子解释防抖和节流（译）">
 <meta property="og:url" content="http://example.com/2020/10/28/throttle-and-debounce/index.html">
-<meta property="og:site_name" content="博客">
-<meta property="og:description" content="防抖和节流是两个相似的技术去控制很多次我们允许一个函数去执行在一定时间内 有防抖和节流的函数是特别有用的，当我们把这个函数绑到DOM事件时。为什么？因为我们有了一个控制层在事件和执行函数之间。记住，如果我们不去控制DOM事件的冒泡，它的数量可以非常巨大。">
+<meta property="og:site_name" content="小白船">
+<meta property="og:description" content="这是一篇译文，是一篇我感觉对防抖和节流解释比较好懂的博客。原文在这里  防抖和节流是两个相似的技术去控制很多次我们允许一个函数去执行在一定时间内 有防抖和节流的函数是特别有用的，当我们把这个函数绑到DOM事件时。为什么？因为我们有了一个控制层在事件和执行函数之间。记住，如果我们不去控制DOM事件的冒泡，它的数量可以非常巨大。 例如，让我们看看滚动事件，看下面的例子：   当我们使用触摸板，滚轮或">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/2020/10/28/throttle-and-debounce/debounce.png">
+<meta property="og:image" content="http://example.com/2020/10/28/throttle-and-debounce/debounce-leading.png">
 <meta property="article:published_time" content="2020-10-28T10:37:00.000Z">
-<meta property="article:modified_time" content="2020-10-28T11:07:52.350Z">
-<meta property="article:author" content="hello">
+<meta property="article:modified_time" content="2020-10-29T09:56:37.433Z">
+<meta property="article:author" content="Czuaphe">
+<meta property="article:tag" content="前端">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://example.com/2020/10/28/throttle-and-debounce/debounce.png">
 
@@ -50,7 +52,7 @@
   };
 </script>
 
-  <title>通过例子解释防抖和节流（译） | 博客</title>
+  <title>通过例子解释防抖和节流（译） | 小白船</title>
   
 
 
@@ -110,7 +112,7 @@
 
     <a href="/" class="brand" rel="start">
       <i class="logo-line"></i>
-      <h1 class="site-title">博客</h1>
+      <h1 class="site-title">小白船</h1>
       <i class="logo-line"></i>
     </a>
       <p class="site-subtitle" itemprop="description">简洁，简化，简单</p>
@@ -157,7 +159,7 @@
 
       <section class="site-overview-wrap sidebar-panel">
         <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
-  <p class="site-author-name" itemprop="name">hello</p>
+  <p class="site-author-name" itemprop="name">Czuaphe</p>
   <div class="site-description" itemprop="description"></div>
 </div>
 <div class="site-state-wrap site-overview-item animated">
@@ -167,6 +169,10 @@
           <span class="site-state-item-count">1</span>
           <span class="site-state-item-name">日志</span>
         </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span>
       </div>
   </nav>
 </div>
@@ -209,12 +215,12 @@
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="hello">
+      <meta itemprop="name" content="Czuaphe">
       <meta itemprop="description" content="">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="博客">
+      <meta itemprop="name" content="小白船">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -228,12 +234,32 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2020-10-28 18:37:00 / 修改时间：19:07:52" itemprop="dateCreated datePublished" datetime="2020-10-28T18:37:00+08:00">2020-10-28</time>
+      <time title="创建时间：2020-10-28 18:37:00" itemprop="dateCreated datePublished" datetime="2020-10-28T18:37:00+08:00">2020-10-28</time>
     </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-10-29 17:56:37" itemprop="dateModified" datetime="2020-10-29T17:56:37+08:00">2020-10-29</time>
+      </span>
 
   
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3.6k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>3 分钟</span>
+    </span>
 </div>
 
         </div>
@@ -243,26 +269,35 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p>防抖和节流是两个相似的技术去控制很多次我们允许一个函数去执行在一定时间内</p>
+        <blockquote>
+<p>这是一篇译文，是一篇我感觉对防抖和节流解释比较好懂的博客。原文在<a target="_blank" rel="noopener" href="https://css-tricks.com/debouncing-throttling-explained-examples/">这里</a></p>
+</blockquote>
+<p>防抖和节流是两个相似的技术去控制很多次我们允许一个函数去执行在一定时间内</p>
 <p>有防抖和节流的函数是特别有用的，当我们把这个函数绑到DOM事件时。为什么？因为我们有了一个控制层在事件和执行函数之间。记住，如果我们不去控制DOM事件的冒泡，它的数量可以非常巨大。</p>
-<a id="more"></a>
-
 <p>例如，让我们看看滚动事件，看下面的例子：</p>
 <iframe id="cp_embed_PZOZgB" src="//codepen.io/dcorb/embed/PZOZgB?height=400]&theme-id=dark&slug-hash=PZOZgB&default-tab=[" scrolling="no" frameborder="no" height="400]" allowTransparency="true" allowfullscreen="true" class="cp_embed_iframe" style="width: 100%; overflow: hidden;"></iframe>
 
 <p>当我们使用触摸板，滚轮或者仅仅是拖动滚动条时每秒就能触发30次滚动事件。而且在手机上缓慢的滚动每秒能触发100次滚动事件在我的测试中。你的滚动函数准备好这种速度的执行了吗？</p>
 <p>在2011年，一个问题在Twitter网站上出现：当你向下滚动你的Twitter feed时，它会变慢而且没有响应。John Resig发表的一篇博客提出了这个问题并解释直接把耗时操作绑到scroll事件上是一个坏主意。</p>
 <p>John建议的解决方法是每250ms跑一个循环，在onScroll事件之外。这种方法处理函数没有与事件耦合在一起。使用这种简单的技术，我们避免了毁灭性的用户体验。</p>
-<p>？？？。让我向你介绍防抖，节流和rAF。当然我们会使用适合的例子。</p>
+<p>如今事件处理方法会更加复杂。让我向你介绍防抖，节流和rAF。当然我们会使用适合的例子。</p>
+<a id="more"></a>
+
 <h2 id="防抖"><a href="#防抖" class="headerlink" title="防抖"></a>防抖</h2><p>防抖技术允许我们将多个分散的调用“合并”成一个。</p>
-<p><img src="/2020/10/28/throttle-and-debounce/debounce.png" alt="debounce"></p>
+<p><img src="/2020/10/28/throttle-and-debounce/debounce.png"></p>
 <p>想像一下你在一个电梯上，电梯门就要关闭了，突然另外一个人想要上电梯，所以在门外按了按钮。电梯并不会开始改变楼层，而是重新打开门。下一个人也是一样。电梯会延时它的行为（移动楼层）从而优化资源使用。</p>
 <p>试一下下面的例子，在顶部按钮点击或者移动鼠标：</p>
+<iframe id="cp_embed_KVxGqN" src="//codepen.io/dcorb/embed/KVxGqN?height=400]&theme-id=dark&slug-hash=KVxGqN&default-tab=[" scrolling="no" frameborder="no" height="400]" allowTransparency="true" allowfullscreen="true" class="cp_embed_iframe" style="width: 100%; overflow: hidden;"></iframe>
+
 <p>你能发现多个顺序快速触发的事件被一个简单的防抖事件取代。但是被触发的事件的是一个大间隔，防抖则不会发生。</p>
 <h2 id="前沿触发（立即触发）"><a href="#前沿触发（立即触发）" class="headerlink" title="前沿触发（立即触发）"></a>前沿触发（立即触发）</h2><p>你一定发现了防抖事件需要等到事件发生得不那么快速才能触发执行。为什么不立即触发防抖函数执行呢？这样它的行为更接近原始没有防抖时的函数，而且不会继续调触发当调用速度很快的时候。</p>
 <p>当然是可以的，这里有一个立即触发例子：</p>
-<p>【图片】</p>
-<p>In underscore.js, the option is called immediate instead of leading</p>
+<p><img src="/2020/10/28/throttle-and-debounce/debounce-leading.png"></p>
+<p>在underscore.js里面立即触发的选项叫immediate。</p>
+<p>自己试试吧：</p>
+<iframe id="cp_embed_GZWqNV" src="//codepen.io/dcorb/embed/GZWqNV?height=400]&theme-id=dark&slug-hash=GZWqNV&default-tab=[" scrolling="no" frameborder="no" height="400]" allowTransparency="true" allowfullscreen="true" class="cp_embed_iframe" style="width: 100%; overflow: hidden;"></iframe>
+
+
 <h2 id="实现防抖"><a href="#实现防抖" class="headerlink" title="实现防抖"></a>实现防抖</h2><p>第一次我看见防抖的JavaScript实现是在John Hann在2009年的一篇博客上。（他创造了这个词）</p>
 <p>之后，Ben Alman写了一个jQuery插件。然后一年后，Jeremy Ashkenas把它添加到了underscore.js里面。最后它被添加到了Lodash（一个underscore.js的替代方案）里面。</p>
 <p>三种实现内部实现可能有一点不同，但是它们的接口是相同的。</p>
@@ -271,23 +306,31 @@
 <p>新的maxWait选项（目前仅仅在Lodash里）不是本文叙述之内，但是它是真的很有用。事实上，在Lodash源码里面节流函数就是使用防抖函数加maxWait选项定义的。</p>
 <h2 id="防抖例子"><a href="#防抖例子" class="headerlink" title="防抖例子"></a>防抖例子</h2><h3 id="调整页面大小例子"><a href="#调整页面大小例子" class="headerlink" title="调整页面大小例子"></a>调整页面大小例子</h3><p>当一个浏览器窗口大小发生变化时，可能触发很多次resize事件</p>
 <p>就像下面的例子：</p>
+<iframe id="cp_embed_XXPjpd" src="//codepen.io/dcorb/embed/XXPjpd?height=400]&theme-id=dark&slug-hash=XXPjpd&default-tab=[" scrolling="no" frameborder="no" height="400]" allowTransparency="true" allowfullscreen="true" class="cp_embed_iframe" style="width: 100%; overflow: hidden;"></iframe>
+
 <p>如你所见，我们使用默认的trailing选项的防抖函数在resize事件中，因为我们只对用户停止调整大小的最后一个值感兴趣。</p>
 <h3 id="输入在自动提交表单中带Ajax请求"><a href="#输入在自动提交表单中带Ajax请求" class="headerlink" title="输入在自动提交表单中带Ajax请求"></a>输入在自动提交表单中带Ajax请求</h3><p>为什么当用户持续输入的时候，要每隔50ms向服务器发送Ajax请求呢？_.debounce可以帮我们避免多余的工作，而且只有当用户停止输入时发送请求。</p>
 <p>在这个例子里leading选项是没有意义的，我们需要 等用户最后一个字母输入完。</p>
+<iframe id="cp_embed_mVGVOL" src="//codepen.io/dcorb/embed/mVGVOL?height=400]&theme-id=dark&slug-hash=mVGVOL&default-tab=[" scrolling="no" frameborder="no" height="400]" allowTransparency="true" allowfullscreen="true" class="cp_embed_iframe" style="width: 100%; overflow: hidden;"></iframe>
+
 <p>一个相似的例子是我们需要等到用户停止输入才能校验他输入的值并输出“你的密码太短”等类型的信息。</p>
-<p>1028</p>
-<h2 id="如何使用防抖和节流以及常见陷阱"><a href="#如何使用防抖和节流以及常见陷阱" class="headerlink" title="如何使用防抖和节流以及常见陷阱"></a>如何使用防抖和节流以及常见陷阱</h2><p>编写自己的防抖/节流函数或者从其它的博客里面复制函数是充满诱惑的。但是我的建议是直接使用underscore或者Lodash库。如果你需要<em>.debounce或者</em>.throttle函数，使用Lodash命令可以生成一个只有2KB的压缩过的库。只需要使用下面简单的命令：<br>【code】<br>再说了，也可以使用webpack/browserify/rollup工导入<code>lodash/throttle</code>和<code>lodash/debounce</code>模块或者<code>lodash.debounce</code>和<code>lodash.throttle</code>模块。</p>
+<h2 id="如何使用防抖和节流以及常见陷阱"><a href="#如何使用防抖和节流以及常见陷阱" class="headerlink" title="如何使用防抖和节流以及常见陷阱"></a>如何使用防抖和节流以及常见陷阱</h2><p>编写自己的防抖/节流函数或者从其它的博客里面复制函数是充满诱惑的。但是我的建议是直接使用underscore或者Lodash库。如果你需要<em>.debounce或者</em>.throttle函数，使用Lodash命令可以生成一个只有2KB的压缩过的库。只需要使用下面简单的命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i -g lodash-cli lodash include &#x3D; debounce, throttle</span><br></pre></td></tr></table></figure>
+
+<p>再说了，也可以使用webpack/browserify/rollup工导入<code>lodash/throttle</code>和<code>lodash/debounce</code>模块或者<code>lodash.debounce</code>和<code>lodash.throttle</code>模块。</p>
 <p>一个常见的陷阱是调用<code>_.debounce</code>函数超过一次：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// WRONG</span></span><br><span class="line">$(<span class="built_in">window</span>).on(<span class="string">&#x27;scroll&#x27;</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">   _.debounce(doSomething, <span class="number">300</span>); </span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// RIGHT</span></span><br><span class="line">$(<span class="built_in">window</span>).on(<span class="string">&#x27;scroll&#x27;</span>, _.debounce(doSomething, <span class="number">200</span>));</span><br></pre></td></tr></table></figure>
 
 <p>将防抖函数赋值给一个变量可以允许我们调用私有的方法<code>debounced_version.cancel()</code>，可以在underscore和Lodash框架使用。下面是例子。</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> debounced_version = _.debounce(doSomething, <span class="number">200</span>); </span><br><span class="line">$(<span class="built_in">window</span>).on(<span class="string">&#x27;scroll&#x27;</span>, debounced_version); </span><br><span class="line"><span class="comment">// If you need it </span></span><br><span class="line">debounced_version.cancel();</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> debounced_version = _.debounce(doSomething, <span class="number">200</span>); $(<span class="built_in">window</span>).on(<span class="string">&#x27;scroll&#x27;</span>, debounced_version); <span class="comment">// If you need it debounced_version.cancel();</span></span><br></pre></td></tr></table></figure>
 
 <h2 id="节流（Throttle）"><a href="#节流（Throttle）" class="headerlink" title="节流（Throttle）"></a>节流（Throttle）</h2><p>使用<code>_.throttle</code>，我们不允许我们的函数每X毫秒执行超过一次。</p>
 <p>与防抖最主要的不同是节流保证函数的执行是规律的，至少每X毫秒执行一次。</p>
 <p>与防抖一样，节流也被合进了Ben的插件，underscore和Lodash。</p>
 <h2 id="节流例子"><a href="#节流例子" class="headerlink" title="节流例子"></a>节流例子</h2><p><strong>无限滚动</strong><br>这是一个常见的例子。用户在一个无限长的页面上划动。你需要知道用户距离底部还有多远。如果用户接近底部，我们就需要请求更多内容添加到页面底部。</p>
 <p> 这里我们心爱的<code>_.debounce</code>就没有用了。它只能当用户停止滚动的时候触发，而我们需要请求数据当用户到达底部之前。</p>
+<iframe id="cp_embed_eJLMxa" src="//codepen.io/dcorb/embed/eJLMxa?height=400]&theme-id=dark&slug-hash=eJLMxa&default-tab=[" scrolling="no" frameborder="no" height="400]" allowTransparency="true" allowfullscreen="true" class="cp_embed_iframe" style="width: 100%; overflow: hidden;"></iframe>
+
 <p> 而使用<code>_.throttle</code>我们则能保证不断地检查我们距离底部有多远。</p>
 <h2 id="requestAnimationFrame-rAF"><a href="#requestAnimationFrame-rAF" class="headerlink" title="requestAnimationFrame(rAF)"></a>requestAnimationFrame(rAF)</h2><p> <code>requestAnimationFrame</code>是另外一种限制函数执行速度的方法。</p>
 <p> 它可以理解成<code>_.throttle(dosomething, 16)</code>。但是更准确的说，它是更精确的浏览器原生API。</p>
@@ -302,7 +345,22 @@
 <li>尽管现代浏览器都支持了rAF，但是IE9，Opera Mini和早期的Android不支持。可能还是需要一个polyfill</li>
 <li>rAF不支持node.js，所以你不能在服务器上节流文件系统的事件。</li>
 </ul>
-<h2 id="rAF例子"><a href="#rAF例子" class="headerlink" title="rAF例子"></a>rAF例子</h2><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2>
+<p>根据经验，如果你的JavaScript函数渲染元素或者有动画使用<code>requestAnimationFrame</code>函数比较好。</p>
+<p>发送Ajax请求或者决定是否添加或删除一个样式（触发CSS动画）我会选择<code>_.debounce</code>或者<code>_.throttle</code>来降低函数执行的速度（例如：200ms，代替16ms）。</p>
+<p>如果你认为rAF被内置到underscore或者Lodash里面，它们都拒绝了这个想法，因为这是一个专门的例子，它很容易使用。</p>
+<h2 id="rAF例子"><a href="#rAF例子" class="headerlink" title="rAF例子"></a>rAF例子</h2><p>这个例子在滚动事件上使用rAF，灵感来自Paul Lewis的一篇一步一步解释这个例子逻辑的文章。</p>
+<p>我把它和配置了16ms的<code>_.throttle</code>方法放在一起。它们的行为非常相似，但是rAF在更复杂的场景展现会更好。</p>
+<iframe id="cp_embed_pgOKKw" src="//codepen.io/dcorb/embed/pgOKKw?height=400]&theme-id=dark&slug-hash=pgOKKw&default-tab=[" scrolling="no" frameborder="no" height="400]" allowTransparency="true" allowfullscreen="true" class="cp_embed_iframe" style="width: 100%; overflow: hidden;"></iframe>
+
+<p>我见过使用这种技术的一个更高级的例子是在headroom.js里面将逻辑解耦并包装在一个对象的时候。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p> 使用防抖，节流和<code>requestAnimationFrame</code>来优化你的事件调用函数吧，每种技术都不同，但又互为补充。</p>
+<p> 总结：</p>
+<ul>
+<li><strong>防抖</strong>：合并一些密集快速的事件为单一的一次。</li>
+<li><strong>节流</strong>：保证每隔X毫秒会执行一次。比如每隔200ms检查一下你滚动的位置来触发CSS动画。</li>
+<li><strong>requestAnimationFrame</strong>：节流 的代替。当你想让你的函数重新计算或渲染元素时保证流畅的变化时用它。注意：不支持IE9。</li>
+</ul>
+
     </div>
 
     
@@ -310,6 +368,9 @@
     
 
     <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag"># 前端</a>
+          </div>
 
         
 
@@ -362,7 +423,23 @@
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
-  <span class="author" itemprop="copyrightHolder">hello</span>
+  <span class="author" itemprop="copyrightHolder">Czuaphe</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>站点总字数：</span>
+    <span title="站点总字数">4k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">3 分钟</span>
+  </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
