@@ -22,29 +22,33 @@
     var CONFIG = {"hostname":"czuaphe.github.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="小白船">
-<meta property="og:url" content="https://czuaphe.github.com/index.html">
+  <meta name="description" content="第一篇，新建watcher对象时运行的getter函数，会调用data属性的get修饰器从而触发dep.depend()函数，完成了watcher与dep依赖的收集。让watcher和data建立了联系。那么这一次，让我们看一下依赖收集完成之后，是如何完成依赖更新的。 让我们从还是在initData() 方法里面的defineReactive()方法再次开始吧！ 12345678910111213">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vue 源码解析（二）：依赖更新（Watcher对象，nextTick和更新队列）">
+<meta property="og:url" content="https://czuaphe.github.com/2021/03/22/vue-source-code-2/index.html">
 <meta property="og:site_name" content="小白船">
+<meta property="og:description" content="第一篇，新建watcher对象时运行的getter函数，会调用data属性的get修饰器从而触发dep.depend()函数，完成了watcher与dep依赖的收集。让watcher和data建立了联系。那么这一次，让我们看一下依赖收集完成之后，是如何完成依赖更新的。 让我们从还是在initData() 方法里面的defineReactive()方法再次开始吧！ 12345678910111213">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-03-22T02:02:09.000Z">
+<meta property="article:modified_time" content="2021-03-23T07:11:41.830Z">
 <meta property="article:author" content="Czuaphe">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="https://czuaphe.github.com/">
+<link rel="canonical" href="https://czuaphe.github.com/2021/03/22/vue-source-code-2/">
 
 
 <script class="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>小白船</title>
+  <title>Vue 源码解析（二）：依赖更新（Watcher对象，nextTick和更新队列） | 小白船</title>
   
 
 
@@ -189,631 +193,12 @@
 </noscript>
 
 
-    <div class="main-inner index posts-expand">
+    <div class="main-inner post posts-expand">
       
 
       
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://czuaphe.github.com/2020/11/10/callback-history/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Czuaphe">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="小白船">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/11/10/callback-history/" class="post-title-link" itemprop="url">异步函数发展史：Promise对象，Generator函数，Thunk函数和自动流程管理</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2020-11-10 16:48:10" itemprop="dateCreated datePublished" datetime="2020-11-10T16:48:10+08:00">2020-11-10</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-02-26 15:59:02" itemprop="dateModified" datetime="2021-02-26T15:59:02+08:00">2021-02-26</time>
-      </span>
 
   
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>5.6k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>5 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="回调地狱"><a href="#回调地狱" class="headerlink" title="回调地狱"></a>回调地狱</h2><p>下面的回调应该是大部分人都见到的，但是可能没有几个人对回调这种写法有好感的。因为一层层的嵌套让逻辑的代码的理解性开始变差，最外层的代码明明没有做错什么，但是头和尾越来越远，怎么都不能相见。如果遇到十几层的回调，可能一个函数就要几百行了，简直反人类。</p>
-<p>所以如何简单又好理解的实现异步函数是前端人员的必修课。相信大部分前端已经学习过了异步函数的写法就是使用Promise和async函数，可以比较好的解决异步函数的问题。</p>
-<p>那么今天，我们就了解一下异步函数经过了哪些变化才变成今天这个样子的？</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/11/10/callback-history/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://czuaphe.github.com/2020/11/03/closure-explaining/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Czuaphe">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="小白船">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/11/03/closure-explaining/" class="post-title-link" itemprop="url">对闭包的理解</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2020-11-03 17:50:07" itemprop="dateCreated datePublished" datetime="2020-11-03T17:50:07+08:00">2020-11-03</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-02-27 11:52:22" itemprop="dateModified" datetime="2021-02-27T11:52:22+08:00">2021-02-27</time>
-      </span>
-
-  
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>314</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <blockquote>
-<p>MDN：<strong>闭包就是函数与它目前所在的词法环境一起的统称。</strong></p>
-</blockquote>
-<p>主要应用在使用访问函数内部变量时，返回包含访问函数内部变量的子函数。这样子函数与它的词法环境就构造成了闭包。</p>
-<p>闭包的优点：可以隔离外部的直接访问。只能通过返回的函数访问或者修改内部变量。让函数与数据（环境）关联起来。类似于<code>class</code>的功能。</p>
-<p>参考资料：<br>MDN闭包：<a href="">https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Functionsz</a><br>MDN函数：<a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Functions">https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Functions</a></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://czuaphe.github.com/2020/10/30/knowledge-framework/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Czuaphe">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="小白船">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/30/knowledge-framework/" class="post-title-link" itemprop="url">我的知识框架</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2020-10-30 10:35:13" itemprop="dateCreated datePublished" datetime="2020-10-30T10:35:13+08:00">2020-10-30</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-18 14:38:14" itemprop="dateModified" datetime="2021-03-18T14:38:14+08:00">2021-03-18</time>
-      </span>
-
-  
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>232</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <blockquote>
-<p><strong>加粗</strong>知识点为我自己写的文章，其它为比较好理解的他人博客</p>
-</blockquote>
-<h2 id="JavaScript"><a href="#JavaScript" class="headerlink" title="JavaScript"></a>JavaScript</h2><ul>
-<li>事件循环（Event Loop）：？？？</li>
-<li><strong>异步函数发展史</strong>：<a target="_blank" rel="noopener" href="https://czuaphe.github.io/2020/11/10/callback-history/">我的博客</a></li>
-<li><strong>JavaScript里面的模块化</strong>：<a target="_blank" rel="noopener" href="https://czuaphe.github.io/2020/12/03/modularization-javascript/">我的博客</a></li>
-<li><strong>闭包理解</strong>：<a target="_blank" rel="noopener" href="https://czuaphe.github.io/2020/11/03/closure-explaining/">我的博客</a></li>
-</ul>
-<p>网上的博客：</p>
-<ul>
-<li>原型链prototype和__proto__：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/myfirstboke/p/10449272.html">CNBLOG</a> </li>
-<li>正则表达式列表：<a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Regular_Expressions">MDN</a></li>
-</ul>
-<!-- ## HTML -->
-
-<!-- ## CSS -->
-
-<!-- ## 运行环境 -->
-
-<!-- ## 计算机基础 -->
-
-<h2 id="框架与类库"><a href="#框架与类库" class="headerlink" title="框架与类库"></a>框架与类库</h2><!-- ### TypeScript -->
-
-<h3 id="Vue"><a href="#Vue" class="headerlink" title="Vue"></a>Vue</h3><ul>
-<li><strong>Vue 源码解析（一）</strong>：<a target="_blank" rel="noopener" href="https://czuaphe.github.io/2021/03/09/vue-source-code-1/">初始化data和computed属性（Observer，Dep与Watch对象的联系）</a></li>
-</ul>
-<h3 id="Lodash"><a href="#Lodash" class="headerlink" title="Lodash"></a>Lodash</h3><ul>
-<li><strong>通过例子解释防抖和节流</strong>： <a target="_blank" rel="noopener" href="https://css-tricks.com/debouncing-throttling-explained-examples/">源文章</a>、<a target="_blank" rel="noopener" href="https://czuaphe.github.io/2020/10/28/throttle-and-debounce/">我的博客</a></li>
-</ul>
-<!-- ## 前端工程化 -->
-
-<!-- ### webpack -->
-
-<!-- ### npm -->
-
-
-
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://czuaphe.github.com/2020/12/03/modularization-javascript/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Czuaphe">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="小白船">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/12/03/modularization-javascript/" class="post-title-link" itemprop="url">JavaScript里面的模块化</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2020-12-03 10:22:55" itemprop="dateCreated datePublished" datetime="2020-12-03T10:22:55+08:00">2020-12-03</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-02-27 10:30:58" itemprop="dateModified" datetime="2021-02-27T10:30:58+08:00">2021-02-27</time>
-      </span>
-
-  
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>1.3k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>JS的模块化大致有CommonJS，AMD，CMD，es6Module四种。那么它们到底有什么相同和不同之处呢？</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/12/03/modularization-javascript/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://czuaphe.github.com/2020/10/28/throttle-and-debounce/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Czuaphe">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="小白船">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/28/throttle-and-debounce/" class="post-title-link" itemprop="url">通过例子解释防抖和节流（译）</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2020-10-28 18:37:00" itemprop="dateCreated datePublished" datetime="2020-10-28T18:37:00+08:00">2020-10-28</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-10-29 17:56:37" itemprop="dateModified" datetime="2020-10-29T17:56:37+08:00">2020-10-29</time>
-      </span>
-
-  
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>3.6k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>3 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <blockquote>
-<p>这是一篇译文，是一篇我感觉对防抖和节流解释比较好懂的博客。原文在<a target="_blank" rel="noopener" href="https://css-tricks.com/debouncing-throttling-explained-examples/">这里</a></p>
-</blockquote>
-<p>防抖和节流是两个相似的技术去控制很多次我们允许一个函数去执行在一定时间内</p>
-<p>有防抖和节流的函数是特别有用的，当我们把这个函数绑到DOM事件时。为什么？因为我们有了一个控制层在事件和执行函数之间。记住，如果我们不去控制DOM事件的冒泡，它的数量可以非常巨大。</p>
-<p>例如，让我们看看滚动事件，看下面的例子：</p>
-<iframe id="cp_embed_PZOZgB" src="//codepen.io/dcorb/embed/PZOZgB?height=400]&theme-id=dark&slug-hash=PZOZgB&default-tab=[" scrolling="no" frameborder="no" height="400]" allowTransparency="true" allowfullscreen="true" class="cp_embed_iframe" style="width: 100%; overflow: hidden;"></iframe>
-
-<p>当我们使用触摸板，滚轮或者仅仅是拖动滚动条时每秒就能触发30次滚动事件。而且在手机上缓慢的滚动每秒能触发100次滚动事件在我的测试中。你的滚动函数准备好这种速度的执行了吗？</p>
-<p>在2011年，一个问题在Twitter网站上出现：当你向下滚动你的Twitter feed时，它会变慢而且没有响应。John Resig发表的一篇博客提出了这个问题并解释直接把耗时操作绑到scroll事件上是一个坏主意。</p>
-<p>John建议的解决方法是每250ms跑一个循环，在onScroll事件之外。这种方法处理函数没有与事件耦合在一起。使用这种简单的技术，我们避免了毁灭性的用户体验。</p>
-<p>如今事件处理方法会更加复杂。让我向你介绍防抖，节流和rAF。当然我们会使用适合的例子。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/10/28/throttle-and-debounce/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://czuaphe.github.com/2021/03/09/vue-source-code-1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Czuaphe">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="小白船">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/03/09/vue-source-code-1/" class="post-title-link" itemprop="url">Vue 源码解析（一）：依赖收集（Observer，Dep与Watcher对象）</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-03-09 14:35:39" itemprop="dateCreated datePublished" datetime="2021-03-09T14:35:39+08:00">2021-03-09</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-22 10:04:12" itemprop="dateModified" datetime="2021-03-22T10:04:12+08:00">2021-03-22</time>
-      </span>
-
-  
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>14k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>13 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="Vue-实例新建流程"><a href="#Vue-实例新建流程" class="headerlink" title="Vue 实例新建流程"></a>Vue 实例新建流程</h2><p>Vue源码目录结构说明</p>
-<ul>
-<li>src<ul>
-<li>compiler <code>解析模板生成AST和render函数</code></li>
-<li>core<ul>
-<li>components <code>目前只有keep-alive组件</code></li>
-<li>global-api <code>向Vue对象注入全局方法：Vue.use()，Vue.extend()等</code></li>
-<li>instance <code>向Vue实例对象注入方法：this.$emit(),this.$forceUpdate()等</code></li>
-<li>observer <code>实现data与Watch对象的依赖收集与更新</code></li>
-<li>util <code>工具类</code></li>
-<li>vdom <code>Vdom有关方法</code></li>
-</ul>
-</li>
-<li>entries <code>Vue 不同类型源码入口</code></li>
-<li>platforms </li>
-<li>server</li>
-<li>sfc</li>
-<li>shared</li>
-</ul>
-</li>
-</ul>
-<p>这次主要我们用到的目录只有：global-api，instance，observer三个。主要介绍Vue实例化时初始数据和计算属性时的源码具体内容。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/03/09/vue-source-code-1/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
 
 
 <div class="post-block">
@@ -833,10 +218,9 @@
       <meta itemprop="name" content="小白船">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/03/22/vue-source-code-2/" class="post-title-link" itemprop="url">Vue 源码解析（二）：依赖更新（Watcher对象，nextTick和更新队列）</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          Vue 源码解析（二）：依赖更新（Watcher对象，nextTick和更新队列）
+        </h1>
 
         <div class="post-meta-container">
           <div class="post-meta">
@@ -880,7 +264,7 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p>第一篇，新建watcher对象时运行的getter函数，会调用data属性的get修饰器从而触发dep.depend()函数，完成了watcher与dep依赖的收集。让watcher和data建立了联系。那么这一次，让我们看一下依赖收集完成之后，是如何完成依赖更新的。</p>
+        <p>第一篇，新建watcher对象时运行的getter函数，会调用data属性的get修饰器从而触发dep.depend()函数，完成了watcher与dep依赖的收集。让watcher和data建立了联系。那么这一次，让我们看一下依赖收集完成之后，是如何完成依赖更新的。</p>
 <p>让我们从还是在initData() 方法里面的defineReactive()方法再次开始吧！</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">defineReactive</span> (<span class="params">obj: <span class="built_in">Object</span>, key: string, val: any, customSetter?: <span class="built_in">Function</span></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> childOb = observe(val)</span><br><span class="line">  <span class="built_in">Object</span>.defineProperty(obj, key, &#123;</span><br><span class="line">    enumerable: <span class="literal">true</span>,</span><br><span class="line">    configurable: <span class="literal">true</span>,</span><br><span class="line">    get: <span class="function"><span class="keyword">function</span> <span class="title">reactiveGetter</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">      ...</span><br><span class="line">      <span class="keyword">return</span> value</span><br><span class="line">    &#125;,</span><br><span class="line">    set: <span class="function"><span class="keyword">function</span> <span class="title">reactiveSetter</span> (<span class="params">newVal</span>) </span>&#123;</span><br><span class="line">      <span class="keyword">const</span> value = getter ? getter.call(obj) : val</span><br><span class="line">      <span class="comment">/* eslint-disable no-self-compare */</span></span><br><span class="line">      <span class="keyword">if</span> (newVal === value || (newVal !== newVal &amp;&amp; value !== value)) &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">/* eslint-enable no-self-compare */</span></span><br><span class="line">      <span class="keyword">if</span> (process.env.NODE_ENV !== <span class="string">&#x27;production&#x27;</span> &amp;&amp; customSetter) &#123;</span><br><span class="line">        customSetter()</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (setter) &#123;</span><br><span class="line">        setter.call(obj, newVal)</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        val = newVal</span><br><span class="line">      &#125;</span><br><span class="line">      childOb = observe(newVal)</span><br><span class="line">      dep.notify() <span class="comment">// &lt;-- 依赖更新的重点</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这次让我们看一下set修饰器的作用，在代码中出现 <code>this.XXX = XXX</code> 这样的语句时。set修饰器的方法就会被触发。首先通过getter得到旧值，判断旧值与新值是否相同，如果相同就不触发更新。然后使用新值替换旧值，再次递归观察新值，最后调用 <code>dep.notify()</code> 通知监听器依赖更新了。</p>
@@ -897,7 +281,6 @@
 
 <p>更新队列的 <code>flushSchedulerQueue</code> 函数一共有5步。分别是先对watcher进行排序，然后循环调用watcher的run()函数，完成更新。同时判断是否循环更新， <code>config._maxUpdateCount</code> 的值是100，接着更新完之后，会重置更新队列。最后判断 更新的watcher里面是否有视图的watcher对象，如果有调用 <code>updated</code> 钩子。</p>
 
-      
     </div>
 
     
@@ -905,17 +288,24 @@
     
 
     <footer class="post-footer">
-        <div class="post-eof"></div>
-      
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/03/09/vue-source-code-1/" rel="prev" title="Vue 源码解析（一）：依赖收集（Observer，Dep与Watcher对象）">
+                  <i class="fa fa-chevron-left"></i> Vue 源码解析（一）：依赖收集（Observer，Dep与Watcher对象）
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
     </footer>
   </article>
 </div>
 
 
 
-
-
-  
 
 
 
